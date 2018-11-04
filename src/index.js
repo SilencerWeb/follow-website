@@ -1,17 +1,70 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import Select from 'react-select';
 
 import { Container } from 'ui/atoms';
 import { Card } from 'ui/molecules';
-import { GlobalStyles } from 'ui/theme';
+import { GlobalStyles, color } from 'ui/theme';
 
 
 const IntroText = styled.p`
   font-size: 40px;
-  margin-top: 0;
+  text-align: center;
+  margin-top: 30px;
   margin-bottom: 30px;
+  
+  &:first-child {
+    margin-top: 0;
+  }
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+`;
+
+const IntroInterest = styled.span`
+  font-size: 20px;
+  color: ${color.onTertiary};
+  background-color: ${color.tertiary};
+  border: 1px solid ${color.onTertiary};
+  border-radius: 6px;
+  padding-top: 10px;
+  padding-right: 15px;
+  padding-bottom: 10px;
+  padding-left: 15px;
+  margin-right: 10px;
+  transition: 0.1s;
+  cursor: pointer;
+  
+  &:last-child {
+    margin-right: 0;
+  }
+  
+  &:hover {
+    color: ${color.primary};
+    border-color: ${color.primary};
+  }
+  
+  ${props => css`
+    
+    ${props.isChosen && css`
+      color: ${color.onPrimary};
+      background-color: ${color.primary};
+      border-color: ${color.primary};
+      
+      &:hover {
+        color: ${color.onPrimary};
+        border-color: ${color.primary};
+      }
+    `}
+  `}
+`;
+
+const IntroInterestsWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
 `;
 
 const Intro = styled.div`
@@ -233,6 +286,8 @@ class App extends React.Component {
       ...prevState,
       filterCards: prevState.cards.filter((card) => {
         return card.interests.some((cardInterest) => {
+          if (!prevState.chosenInterests.length) return true;
+
           return prevState.chosenInterests.some((chosenInterest) => chosenInterest === cardInterest);
         });
       }),
@@ -241,6 +296,27 @@ class App extends React.Component {
 
   handleSelectChange = (selectedOptions) => {
     this.setState({ chosenInterests: selectedOptions.map((selectedOption) => selectedOption.value) }, this.filterCards);
+  };
+
+  handleIntroInterest = (interest) => {
+    this.setState((prevState) => {
+      let newChosenInterests = prevState.chosenInterests;
+
+      const isChosen = prevState.chosenInterests && prevState.chosenInterests.includes(interest);
+
+      if (isChosen) {
+        const interestIndex = prevState.chosenInterests.findIndex((chosenInterest) => chosenInterest === interest);
+
+        newChosenInterests.splice(interestIndex, 1);
+      } else {
+        newChosenInterests.push(interest);
+      }
+
+      return {
+        ...prevState,
+        chosenInterests: newChosenInterests,
+      };
+    }, this.filterCards);
   };
 
   render = () => {
@@ -254,6 +330,12 @@ class App extends React.Component {
             <IntroText>Type your interests</IntroText>
             <Select
               isMulti={ true }
+              value={
+                this.state.chosenInterests && this.state.chosenInterests.map((chosenInterest) => ({
+                  value: chosenInterest,
+                  label: chosenInterest,
+                }))
+              }
               options={
                 this.state.availableInterests && this.state.availableInterests.map((availableInterest) => ({
                   value: availableInterest,
@@ -262,6 +344,20 @@ class App extends React.Component {
               }
               onChange={ this.handleSelectChange }
             />
+            <IntroText>Or choose them here</IntroText>
+            <IntroInterestsWrapper>
+              {
+                this.state.availableInterests && this.state.availableInterests.map((availableInterest) => (
+                  <IntroInterest
+                    isChosen={ this.state.chosenInterests && this.state.chosenInterests.includes(availableInterest) }
+                    onClick={ () => this.handleIntroInterest(availableInterest) }
+                    key={ availableInterest }
+                  >
+                    { availableInterest }
+                  </IntroInterest>
+                ))
+              }
+            </IntroInterestsWrapper>
           </Intro>
 
           <CardList>

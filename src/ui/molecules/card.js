@@ -1,6 +1,7 @@
 import * as React from 'react';
 import styled from 'styled-components';
 import { darken } from 'polished';
+import fast from 'fast.js';
 
 import { color } from 'ui/theme';
 
@@ -103,14 +104,16 @@ export const Card = (props) => {
         <Username>{ props.username }</Username>
         <Description>{ props.description }</Description>
         <InterestsWrapper>
-          { props.interests && props.interests.map((interest) => (
-            <Interest
-              isMatching={ props.chosenInterests && props.chosenInterests.some((chosenInterest) => chosenInterest === interest) }
-              key={ interest }
-            >
-              { interest }
-            </Interest>
-          )) }
+          {
+            props.interests && fast.map(props.interests, (interest) => (
+              <Interest
+                isMatching={ props.chosenInterests && fast.some(props.chosenInterests, (chosenInterest) => chosenInterest === interest) }
+                key={ interest }
+              >
+                { interest }
+              </Interest>
+            ))
+          }
         </InterestsWrapper>
       </Content>
       <FollowButton href={ `http://twitter.com/${props.username}` } target={ '_blank' }>Follow</FollowButton>

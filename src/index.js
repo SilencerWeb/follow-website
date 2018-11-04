@@ -2,6 +2,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import styled, { css } from 'styled-components';
 import Select from 'react-select';
+import fast from 'fast.js';
 
 import { Container } from 'ui/atoms';
 import { Card } from 'ui/molecules';
@@ -284,18 +285,18 @@ class App extends React.Component {
   filterCards = () => {
     this.setState((prevState) => ({
       ...prevState,
-      filterCards: prevState.cards.filter((card) => {
-        return card.interests.some((cardInterest) => {
-          if (!prevState.chosenInterests.length) return true;
+      filterCards: fast.filter(prevState.cards, (card) => {
+        if (!prevState.chosenInterests.length) return true;
 
-          return prevState.chosenInterests.some((chosenInterest) => chosenInterest === cardInterest);
+        return fast.every(prevState.chosenInterests, (chosenInterest) => {
+          return fast.some(card.interests, (cardInterest) => cardInterest === chosenInterest);
         });
       }),
     }));
   };
 
   handleSelectChange = (selectedOptions) => {
-    this.setState({ chosenInterests: selectedOptions.map((selectedOption) => selectedOption.value) }, this.filterCards);
+    this.setState({ chosenInterests: fast.map(selectedOptions, (selectedOption) => selectedOption.value) }, this.filterCards);
   };
 
   handleIntroInterest = (interest) => {
@@ -331,13 +332,13 @@ class App extends React.Component {
             <Select
               isMulti={ true }
               value={
-                this.state.chosenInterests && this.state.chosenInterests.map((chosenInterest) => ({
+                this.state.chosenInterests && fast.map(this.state.chosenInterests, (chosenInterest) => ({
                   value: chosenInterest,
                   label: chosenInterest,
                 }))
               }
               options={
-                this.state.availableInterests && this.state.availableInterests.map((availableInterest) => ({
+                this.state.availableInterests && fast.map(this.state.availableInterests, (availableInterest) => ({
                   value: availableInterest,
                   label: availableInterest,
                 }))
@@ -347,7 +348,7 @@ class App extends React.Component {
             <IntroText>Or choose them here</IntroText>
             <IntroInterestsWrapper>
               {
-                this.state.availableInterests && this.state.availableInterests.map((availableInterest) => (
+                this.state.availableInterests && fast.map(this.state.availableInterests, (availableInterest) => (
                   <IntroInterest
                     isChosen={ this.state.chosenInterests && this.state.chosenInterests.includes(availableInterest) }
                     onClick={ () => this.handleIntroInterest(availableInterest) }
@@ -362,7 +363,7 @@ class App extends React.Component {
 
           <CardList>
             {
-              this.state.filterCards && this.state.filterCards.map((card) => (
+              this.state.filterCards && fast.map(this.state.filterCards, (card) => (
                 <Card
                   avatar={ card.avatar }
                   name={ card.name }

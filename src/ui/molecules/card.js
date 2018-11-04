@@ -36,8 +36,8 @@ const Description = styled.p`
 
 const Interest = styled.span`
   font-size: 12px;
-  color: #ffffff;
-  background-color: #6a7882;
+  color: ${props => props.isMatching ? color.onPrimary : '#ffffff'};
+  background-color: ${props => props.isMatching ? color.primary : '#6a7882'};
   border-radius: 2px;
   padding-top: 4px;
   padding-right: 6px;
@@ -103,7 +103,14 @@ export const Card = (props) => {
         <Username>{ props.username }</Username>
         <Description>{ props.description }</Description>
         <InterestsWrapper>
-          { props.interests && props.interests.map((interest) => <Interest key={ interest }>{ interest }</Interest>) }
+          { props.interests && props.interests.map((interest) => (
+            <Interest
+              isMatching={ props.chosenInterests && props.chosenInterests.some((chosenInterest) => chosenInterest === interest) }
+              key={ interest }
+            >
+              { interest }
+            </Interest>
+          )) }
         </InterestsWrapper>
       </Content>
       <FollowButton href={ `http://twitter.com/${props.username}` } target={ '_blank' }>Follow</FollowButton>

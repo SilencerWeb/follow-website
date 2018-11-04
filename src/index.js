@@ -273,6 +273,7 @@ class App extends React.Component {
                   username={ card.username }
                   description={ card.description }
                   interests={ card.interests }
+                  chosenInterests={ this.state.chosenInterests }
                   key={ card.username }
                 />
               ))

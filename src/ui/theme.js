@@ -1,5 +1,15 @@
 import { createGlobalStyle, css } from 'styled-components';
+import normalize from 'normalize.css/normalize.css';
 
+
+export const color = {
+  primary: '#1e8aff',
+  onPrimary: '#ffffff',
+  secondary: '#393e41',
+  onSecondary: '#ffffff',
+  tertiary: '#ffffff',
+  onTertiary: '#393e41',
+};
 
 const globalStyles = css`
   @font-face {
@@ -34,8 +44,12 @@ const globalStyles = css`
     position: relative;
     min-width: 32rem;
     font-family: 'Rubik', sans-serif;
+    line-height: 1.2;
+    font-weight: 400;
+    color: ${color.onTertiary};
+    background-color: ${color.tertiary};
   }
 `;
 
 
-export const GlobalStyles = createGlobalStyle`${globalStyles}`;
+export const GlobalStyles = createGlobalStyle`${normalize} ${globalStyles}`;
